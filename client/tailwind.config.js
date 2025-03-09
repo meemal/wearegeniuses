@@ -19,7 +19,23 @@ module.exports = {
           900: '#0c4a6e',
           950: '#082f49',
         },
+        brand: {
+          purple: '#8A2387',
+          orange: '#F27121',
+          salmon: '#E94057',
+        },
+        overlay: {
+          white: 'rgba(255, 255, 255, 0.8)',
+        }
       },
+      backgroundImage: {
+        'gradient-main': 'linear-gradient(to bottom, #F27121, #E94057, #8A2387)',
+        'gradient-button-orange': 'linear-gradient(to right, #F27121, #E94057)',
+        'gradient-button-pink': 'linear-gradient(to right, #E94057, #8A2387)',
+      },
+      backdropBlur: {
+        xs: '2px',
+      }
     },
   },
   plugins: [],

@@ -1,0 +1,15 @@
+How to generate the favicon files:
+
+1. Go to https://realfavicongenerator.net/
+2. Upload the SVG file from public/assets/we-are-geniuses-favicon.svg
+3. Configure the favicon options as needed
+4. Download the favicon package
+5. Extract and place the following files in the public directory:
+   - favicon.ico
+   - favicon-16x16.png
+   - favicon-32x32.png
+   - apple-touch-icon.png
+   - android-chrome-192x192.png
+   - android-chrome-512x512.png
+
+The site.webmanifest file is already created. 

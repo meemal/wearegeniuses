@@ -5,9 +5,10 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  signInWithPopup,
   sendPasswordResetEmail
 } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, googleProvider } from '../services/firebase';
 
 // Create the authentication context
 const AuthContext = createContext();
@@ -40,14 +41,23 @@ export const AuthProvider = ({ children }) => {
     return signOut(auth);
   };
 
-  // Reset password
+  // Reset password with custom configuration
   const resetPassword = (email) => {
-    return sendPasswordResetEmail(auth, email);
+    const actionCodeSettings = {
+      url: `${window.location.origin}/login`,
+      handleCodeInApp: false
+    };
+    return sendPasswordResetEmail(auth, email, actionCodeSettings);
   };
 
   // Update user profile
   const updateUserProfile = (user, profile) => {
     return updateProfile(user, profile);
+  };
+
+  // Sign in with Google
+  const signInWithGoogle = async () => {
+    return signInWithPopup(auth, googleProvider);
   };
 
   // Set up auth state observer
@@ -68,7 +78,8 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     resetPassword,
-    updateUserProfile
+    updateUserProfile,
+    signInWithGoogle
   };
 
   return (
