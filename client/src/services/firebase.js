@@ -13,6 +13,17 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
+// Debug: Log full config (without sensitive values)
+console.log('[Firebase] Configuration:', {
+  hasApiKey: !!firebaseConfig.apiKey,
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+  storageBucket: firebaseConfig.storageBucket,
+  hasMessagingSenderId: !!firebaseConfig.messagingSenderId,
+  hasAppId: !!firebaseConfig.appId,
+  hasMeasurementId: !!firebaseConfig.measurementId
+});
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
@@ -22,25 +33,26 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Export all services
-export { auth, db, storage, googleProvider };
-
-// Debug logging for Firebase initialization
-console.log('[Firebase] Checking initialization status:', {
-  auth: !!auth,
-  db: !!db,
-  storage: !!storage,
-  config: {
-    projectId: firebaseConfig.projectId,
-    storageBucket: firebaseConfig.storageBucket,
-    hasApiKey: !!firebaseConfig.apiKey,
-    hasAuthDomain: !!firebaseConfig.authDomain,
+// More detailed initialization logging
+console.log('[Firebase] Detailed initialization status:', {
+  app: {
+    name: app.name,
+    options: app.options,
+    automaticDataCollectionEnabled: app.automaticDataCollectionEnabled
+  },
+  auth: {
+    initialized: !!auth,
+    currentUser: auth.currentUser,
+    languageCode: auth.languageCode
+  },
+  storage: {
+    initialized: !!storage,
+    bucket: storage?.app?.options?.storageBucket
   }
 });
 
-if (!storage) {
-  console.error('[Firebase] Storage failed to initialize');
-}
+// Export all services
+export { app, auth, db, storage, googleProvider };
 
 export const actionCodeSettings = {
   url: 'https://wearegeniuses.com/reset-password',
@@ -51,4 +63,20 @@ export const sendPasswordResetWithConfig = (email) => {
   return sendPasswordResetEmail(auth, email, actionCodeSettings);
 };
 
-export default app;
+// Final initialization check
+const services = {
+  app: !!app,
+  auth: !!auth,
+  db: !!db,
+  storage: !!storage
+};
+
+console.log('[Firebase] Services initialization status:', services);
+
+if (!Object.values(services).every(Boolean)) {
+  console.error('[Firebase] Some services failed to initialize:', 
+    Object.entries(services)
+      .filter(([_, initialized]) => !initialized)
+      .map(([service]) => service)
+  );
+}

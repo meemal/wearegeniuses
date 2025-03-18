@@ -2,6 +2,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
+// Add validation for Firebase initialization
+if (!db) {
+  console.error('Firestore database not initialized properly');
+}
+
 /**
  * Default profile structure for new users
  */
@@ -32,16 +37,20 @@ const DEFAULT_PROFILE = {
  * @property {boolean} isUpdating - Whether the profile is being updated
  */
 export const useProfile = (userId) => {
+  console.log('useProfile called with userId:', userId);
+  
   const queryClient = useQueryClient();
 
   // Fetch profile
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['profile', userId],
     queryFn: async () => {
+      console.log('Fetching profile for userId:', userId);
       const docRef = doc(db, 'profiles', userId);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
+        console.log('Profile found:', docSnap.data());
         return docSnap.data();
       }
       
@@ -52,6 +61,7 @@ export const useProfile = (userId) => {
         updatedAt: new Date().toISOString()
       };
       
+      console.log('Creating new profile:', newProfile);
       await setDoc(docRef, newProfile);
       return newProfile;
     },
@@ -67,6 +77,7 @@ export const useProfile = (userId) => {
     mutationFn: async (updatedData) => {
       if (!userId) throw new Error('User ID is required to update profile');
       
+      console.log('Updating profile with data:', updatedData);
       const docRef = doc(db, 'profiles', userId);
       await updateDoc(docRef, {
         ...updatedData,
@@ -74,6 +85,7 @@ export const useProfile = (userId) => {
       });
     },
     onSuccess: () => {
+      console.log('Profile updated successfully');
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ['profile', userId] });
     },

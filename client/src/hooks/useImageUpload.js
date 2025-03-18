@@ -13,6 +13,7 @@ const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
  */
 export const useImageUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadingType, setUploadingType] = useState(null); // Track which image type is uploading
   const [error, setError] = useState(null);
 
   const uploadWithRetry = async (storageRef, file, attempt = 1) => {
@@ -62,6 +63,23 @@ export const useImageUpload = () => {
 
     try {
       setIsUploading(true);
+      console.log('[Upload] Setting upload type for path:', path);
+      
+      // Update type detection to handle business logos
+      if (path.includes('profilePicture')) {
+        setUploadingType('profilePicture');
+      } else if (path.includes('coverPhoto')) {
+        setUploadingType('coverPhoto');
+      } else if (path.includes('business')) {
+        const match = path.match(/business-(\d+)-logo/);
+        if (match) {
+          const type = `business-${match[1]}-logo`;
+          console.log('[Upload] Setting business logo type:', type);
+          setUploadingType(type);
+        } else {
+          console.warn('[Upload] Could not determine business logo type from path:', path);
+        }
+      }
       setError(null);
 
       // Validate file type
@@ -83,7 +101,7 @@ export const useImageUpload = () => {
       });
 
       // Create a storage reference
-      const storageRef = ref(storage, `${path}/${Date.now()}-${file.name}`);
+      const storageRef = ref(storage, path);
       console.log('[Upload] Storage reference created:', {
         fullPath: storageRef.fullPath,
         bucket: storage.app.options.storageBucket
@@ -103,11 +121,14 @@ export const useImageUpload = () => {
       console.log('[Upload] Getting download URL...');
       const url = await getDownloadURLWithRetry(snapshot.ref);
       
-      console.log('[Upload] Process completed successfully');
+      console.log('[Upload] Process completed successfully:', {
+        url: url,
+        path: snapshot.ref.fullPath
+      });
       
       return {
         url,
-        filename: snapshot.ref.name,
+        filename: path.split('/').pop(),
         contentType: file.type,
         size: file.size,
         path: snapshot.ref.fullPath
@@ -117,14 +138,16 @@ export const useImageUpload = () => {
       setError(err.message || 'Upload failed');
       throw err;
     } finally {
-      console.log('[Upload] Setting isUploading to false');
+      console.log('[Upload] Cleaning up - Setting isUploading to false');
       setIsUploading(false);
+      setUploadingType(null);
     }
   };
 
   return {
     uploadImage,
     isUploading,
+    uploadingType,
     error
   };
 }; 
