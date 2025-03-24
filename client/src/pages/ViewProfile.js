@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../hooks/useProfile';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import LoadingProgress from '../components/LoadingProgress';
-import { FaUser, FaEnvelope, FaMapMarkerAlt, FaEdit, FaGlobe, FaFacebook, FaLinkedin, FaYoutube } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaMapMarkerAlt, FaEdit, FaGlobe, FaFacebook, FaLinkedin, FaYoutube, FaPhone } from 'react-icons/fa';
 
 const ViewProfile = () => {
   const { currentUser } = useAuth();
@@ -131,72 +131,6 @@ const ViewProfile = () => {
                 </div>
               </div>
             )}
-
-            {/* Contact Info */}
-            <div className="mb-6">
-              <h4 className="text-lg font-semibold text-gray-800 mb-4">Contact Information</h4>
-              <div className="space-y-3">
-                <div className="flex items-center text-gray-700">
-                  <FaEnvelope className="w-5 h-5 mr-3 text-gray-500" />
-                  <span>{profile.email}</span>
-                </div>
-                {profile.location && (
-                  <div className="flex items-center text-gray-700">
-                    <FaMapMarkerAlt className="w-5 h-5 mr-3 text-gray-500" />
-                    <span>{profile.location}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Social Links */}
-            {profile.social && Object.keys(profile.social).length > 0 && (
-              <div>
-                <h4 className="text-lg font-semibold text-gray-800 mb-4">Social Links</h4>
-                <div className="flex space-x-4">
-                  {profile.social.website && (
-                    <a
-                      href={profile.social.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-amber-500"
-                    >
-                      <FaGlobe className="w-5 h-5" />
-                    </a>
-                  )}
-                  {profile.social.facebook && (
-                    <a
-                      href={profile.social.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-[#1877F2]"
-                    >
-                      <FaFacebook className="w-5 h-5" />
-                    </a>
-                  )}
-                  {profile.social.linkedin && (
-                    <a
-                      href={profile.social.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-[#0A66C2]"
-                    >
-                      <FaLinkedin className="w-5 h-5" />
-                    </a>
-                  )}
-                  {profile.social.youtube && (
-                    <a
-                      href={profile.social.youtube}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-[#FF0000]"
-                    >
-                      <FaYoutube className="w-5 h-5" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -210,41 +144,80 @@ const ViewProfile = () => {
               <div key={index} className="relative rounded-lg overflow-hidden">
                 <div className="absolute inset-0 bg-overlay-white backdrop-blur-md"></div>
                 <div className="relative p-6">
-                  {/* Business Logo */}
-                  <div className="h-32 bg-gray-100 flex items-center justify-center mb-4 rounded-lg">
-                    {business.logo?.url ? (
-                      <img
-                        src={business.logo.url}
-                        alt={`${business.name} logo`}
-                        className="max-h-full max-w-full object-contain p-4"
-                      />
-                    ) : (
-                      <span className="text-gray-400 text-4xl">🏢</span>
-                    )}
-                  </div>
+                  {/* Business Header */}
+                  <div className="flex items-start mb-6">
+                    {/* Business Logo */}
+                    <div className="h-24 w-24 bg-gray-100 flex items-center justify-center rounded-lg mr-4 flex-shrink-0">
+                      {business.logo?.url ? (
+                        <img
+                          src={business.logo.url}
+                          alt={`${business.name} logo`}
+                          className="max-h-full max-w-full object-contain p-2"
+                        />
+                      ) : (
+                        <span className="text-gray-400 text-3xl">🏢</span>
+                      )}
+                    </div>
 
-                  {/* Business Info */}
-                  <h4 className="text-xl font-bold text-gray-800 mb-2">{business.name}</h4>
-                  <p className="text-gray-600 mb-4">{business.headline}</p>
-                  
-                  {/* Category Badge */}
-                  <div className="mb-4">
-                    <span className="inline-block bg-amber-100 text-amber-800 text-sm px-3 py-1 rounded-full">
-                      {business.category}
-                    </span>
+                    {/* Business Title and Category */}
+                    <div className="flex-1">
+                      <h4 className="text-xl font-bold text-gray-800 mb-1">{business.name}</h4>
+                      <p className="text-gray-600 text-sm mb-2">{business.headline}</p>
+                      <span className="inline-block bg-amber-100 text-amber-800 text-sm px-3 py-1 rounded-full">
+                        {business.category}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Description */}
                   <p className="text-gray-700 mb-6 line-clamp-3">{business.description}</p>
 
+                  {/* Services Offered */}
+                  {business.services && business.services.length > 0 && (
+                    <div className="mb-6">
+                      <h5 className="text-sm font-semibold text-gray-800 mb-2">Services Offered</h5>
+                      <div className="flex flex-wrap gap-2">
+                        {business.services.map((service, serviceIndex) => (
+                          <span
+                            key={serviceIndex}
+                            className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"
+                          >
+                            {service}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Contact Information */}
+                  <div className="mb-6 space-y-2">
+                    {business.email && (
+                      <div className="flex items-center text-gray-700 text-sm">
+                        <FaEnvelope className="w-4 h-4 mr-2 text-gray-500" />
+                        <a href={`mailto:${business.email}`} className="hover:text-amber-500">
+                          {business.email}
+                        </a>
+                      </div>
+                    )}
+                    {business.phone && (
+                      <div className="flex items-center text-gray-700 text-sm">
+                        <FaPhone className="w-4 h-4 mr-2 text-gray-500" />
+                        <a href={`tel:${business.phone}`} className="hover:text-amber-500">
+                          {business.phone}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Social Links */}
-                  <div className="flex space-x-4">
+                  <div className="flex space-x-4 pt-4 border-t border-gray-200">
                     {business.socialAddresses?.website && (
                       <a
                         href={business.socialAddresses.website}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-600 hover:text-amber-500"
+                        title="Website"
                       >
                         <FaGlobe className="w-5 h-5" />
                       </a>
@@ -255,6 +228,7 @@ const ViewProfile = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-600 hover:text-[#1877F2]"
+                        title="Facebook"
                       >
                         <FaFacebook className="w-5 h-5" />
                       </a>
@@ -265,6 +239,7 @@ const ViewProfile = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-600 hover:text-[#0A66C2]"
+                        title="LinkedIn"
                       >
                         <FaLinkedin className="w-5 h-5" />
                       </a>
@@ -275,6 +250,7 @@ const ViewProfile = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-600 hover:text-[#FF0000]"
+                        title="YouTube"
                       >
                         <FaYoutube className="w-5 h-5" />
                       </a>

@@ -85,9 +85,23 @@ const Profile = () => {
   // Form initialization with proper merging of default values and profile
   const formInitialValues = useMemo(() => {
     if (!profile) return defaultValues;
+    
+    // Ensure businesses array has proper structure
+    const businesses = profile.businesses?.map(business => ({
+      ...business,
+      services: Array.isArray(business.services) ? business.services : [],
+      socialAddresses: business.socialAddresses || {
+        facebook: '',
+        youtube: '',
+        instagram: '',
+        linkedin: ''
+      }
+    })) || [];
+
     return {
       ...defaultValues,
       ...profile,
+      businesses,
       // Ensure nested objects are properly merged
       social: { ...defaultValues.social, ...profile.social }
     };
@@ -136,7 +150,10 @@ const Profile = () => {
         },
         headline: '',
         category: '',
-        description: ''
+        description: '',
+        services: [],
+        email: '',
+        phone: ''
       });
     } else if (!profile && businesses.length === 0) {
       // If no profile or businesses array is empty, add a default listing
@@ -153,7 +170,10 @@ const Profile = () => {
         },
         headline: '',
         category: '',
-        description: ''
+        description: '',
+        services: [],
+        email: '',
+        phone: ''
       });
     }
   }, [profile, businesses.length, appendBusiness]);
@@ -356,7 +376,10 @@ const Profile = () => {
       },
       headline: '',
       category: '',
-      description: ''
+      description: '',
+      services: [],
+      email: '',
+      phone: ''
     });
   }, [appendBusiness]);
 
@@ -482,6 +505,9 @@ const Profile = () => {
   const renderBusinessListing = (field, index) => {
     console.log('[BusinessListing] Rendering business', index, 'with logo:', watch(`businesses.${index}.logo`));
     
+    // Get current services array or initialize empty array
+    const currentServices = watch(`businesses.${index}.services`) || [];
+    
     return (
       <div key={field.id} className="bg-white rounded-lg shadow-md p-6 mb-4">
         {/* Business Logo Upload */}
@@ -564,6 +590,30 @@ const Profile = () => {
 
               <div>
                 <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Email
+                </label>
+                <input
+                  {...register(`businesses.${index}.email`)}
+                  type="email"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="contact@example.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Phone Number
+                </label>
+                <input
+                  {...register(`businesses.${index}.phone`)}
+                  type="tel"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
                   Sector
                 </label>
                 <select
@@ -587,6 +637,51 @@ const Profile = () => {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-24"
                 placeholder="Describe your business..."
               />
+            </div>
+
+            <div className="mt-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Services Offered
+              </label>
+              <div className="space-y-2">
+                {Array.isArray(currentServices) && currentServices.map((service, serviceIndex) => (
+                  <div key={serviceIndex} className="flex items-center gap-2">
+                    <input
+                      {...register(`businesses.${index}.services.${serviceIndex}`)}
+                      type="text"
+                      className="shadow appearance-none border rounded flex-1 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      placeholder="Enter a service..."
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updatedServices = currentServices.filter((_, i) => i !== serviceIndex);
+                        setValue(
+                          `businesses.${index}.services`,
+                          updatedServices
+                        );
+                      }}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <FaTimes className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const services = Array.isArray(currentServices) ? currentServices : [];
+                    setValue(
+                      `businesses.${index}.services`,
+                      [...services, '']
+                    );
+                  }}
+                  className="text-amber-500 hover:text-amber-700 flex items-center gap-2 text-sm"
+                >
+                  <FaPlus className="w-4 h-4" />
+                  Add Service
+                </button>
+              </div>
             </div>
 
             <div className="mt-4">
