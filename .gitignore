@@ -50,4 +50,7 @@ pids
 .npm
 
 # Optional eslint cache
-.eslintcache 
+.eslintcache
+
+# Firebase service account
+**/firebase-service-account.json
