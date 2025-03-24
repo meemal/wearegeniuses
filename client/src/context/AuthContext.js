@@ -63,7 +63,16 @@ export const AuthProvider = ({ children }) => {
   // Set up auth state observer
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+      if (user) {
+        // For now, we'll set all users as having an active subscription
+        // This will be replaced with actual subscription checking later
+        setCurrentUser({
+          ...user,
+          hasActiveSubscription: true
+        });
+      } else {
+        setCurrentUser(null);
+      }
       setLoading(false);
     });
 

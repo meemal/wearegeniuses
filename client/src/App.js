@@ -14,21 +14,10 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
+import Directory from './pages/Directory';
+import Subscription from './pages/Subscription';
 
 // Placeholder pages with frosted glass effect
-const Directory = () => (
-  <div className="max-w-4xl mx-auto">
-    <h2 className="text-2xl font-bold mb-6 text-center text-white">User Directory</h2>
-    <div className="relative rounded-lg overflow-hidden">
-      <div className="absolute inset-0 bg-overlay-white backdrop-blur-md"></div>
-      <div className="relative p-6">
-        <p className="text-gray-700 mb-4">This directory is available for subscribers only.</p>
-        <p className="text-gray-700">Connect with other practitioners and expand your network.</p>
-      </div>
-    </div>
-  </div>
-);
-
 const About = () => (
   <div className="max-w-4xl mx-auto">
     <h2 className="text-2xl font-bold mb-6 text-center text-white">About Us</h2>
@@ -60,6 +49,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/subscription" element={<Subscription />} />
                 <Route 
                   path="/directory" 
                   element={
