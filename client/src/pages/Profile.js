@@ -3,10 +3,11 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../hooks/useProfile';
 import { useImageUpload } from '../hooks/useImageUpload';
-import { FaCamera, FaPlus, FaTimes, FaFacebook, FaLinkedin, FaGlobe, FaYoutube, FaArrowDown, FaArrowUp, FaCheck } from 'react-icons/fa';
+import { FaCamera, FaPlus, FaTimes, FaFacebook, FaLinkedin, FaGlobe, FaYoutube, FaArrowDown, FaArrowUp, FaCheck, FaEye } from 'react-icons/fa';
 import ImageCropper from '../components/ImageCropper';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import LoadingProgress from '../components/LoadingProgress';
+import { Link } from 'react-router-dom';
 
 // Move these outside component to prevent recreating on each render
 const defaultEvents = [
@@ -651,7 +652,16 @@ const Profile = () => {
 
   return (
     <div className="max-w-4xl mx-auto pb-12">
-      <h2 className="text-2xl font-bold mb-6 text-center text-white">Your Profile</h2>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-white">Edit Profile</h2>
+        <Link
+          to="/view-profile"
+          className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
+        >
+          <FaEye className="mr-2" />
+          View Profile
+        </Link>
+      </div>
 
       {(uploadStatus || saveStatus) && (
         <div className={`mb-4 p-4 rounded ${

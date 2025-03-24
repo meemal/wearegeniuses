@@ -16,6 +16,7 @@ import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import Directory from './pages/Directory';
 import Subscription from './pages/Subscription';
+import ViewProfile from './pages/ViewProfile';
 
 // Placeholder pages with frosted glass effect
 const About = () => (
@@ -63,6 +64,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Profile />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/view-profile" 
+                  element={
+                    <ProtectedRoute>
+                      <ViewProfile />
                     </ProtectedRoute>
                   } 
                 />
