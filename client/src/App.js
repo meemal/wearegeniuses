@@ -68,7 +68,7 @@ function App() {
                   } 
                 />
                 <Route 
-                  path="/view-profile" 
+                  path="/view-profile/:userId" 
                   element={
                     <ProtectedRoute>
                       <ViewProfile />

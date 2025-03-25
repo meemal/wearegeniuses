@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../hooks/useProfile';
 import LoadingSkeleton from '../components/LoadingSkeleton';
@@ -8,7 +8,8 @@ import { FaUser, FaEnvelope, FaMapMarkerAlt, FaEdit, FaGlobe, FaFacebook, FaLink
 
 const ViewProfile = () => {
   const { currentUser } = useAuth();
-  const { profile, isLoading } = useProfile(currentUser?.uid);
+  const { userId } = useParams();
+  const { profile, isLoading } = useProfile(userId);
 
   if (isLoading) {
     return (
@@ -23,7 +24,7 @@ const ViewProfile = () => {
     return (
       <div className="max-w-4xl mx-auto py-12 text-center">
         <h2 className="text-2xl font-bold mb-4 text-white">Profile Not Found</h2>
-        <p className="text-gray-300">There was an error loading your profile.</p>
+        <p className="text-gray-300">There was an error loading the profile.</p>
       </div>
     );
   }
@@ -32,13 +33,15 @@ const ViewProfile = () => {
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-white">Profile</h2>
-        <Link
-          to="/profile"
-          className="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-full hover:bg-amber-600 transition-colors"
-        >
-          <FaEdit className="mr-2" />
-          Edit Profile
-        </Link>
+        {currentUser?.uid === userId && (
+          <Link
+            to="/profile"
+            className="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-full hover:bg-amber-600 transition-colors"
+          >
+            <FaEdit className="mr-2" />
+            Edit Profile
+          </Link>
+        )}
       </div>
 
       {/* Main Profile Card */}
