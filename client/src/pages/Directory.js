@@ -6,20 +6,38 @@ import LoadingSkeleton from '../components/LoadingSkeleton';
 import LoadingProgress from '../components/LoadingProgress';
 import { FaGlobe, FaFacebook, FaLinkedin, FaYoutube } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import TestProfileManager from '../components/TestProfileManager';
 
 const Directory = () => {
   // Fetch all profiles with directory listings
   const { data: profiles, isLoading, error } = useQuery({
     queryKey: ['directory'],
     queryFn: async () => {
-      const profilesSnapshot = await getDocs(collection(db, 'profiles'));
+      const [profilesSnapshot, testProfilesSnapshot] = await Promise.all([
+        getDocs(collection(db, 'profiles')),
+        getDocs(collection(db, 'test_profiles'))
+      ]);
+      
       const profilesData = [];
       
+      // Add regular profiles
       profilesSnapshot.forEach(doc => {
         const profile = doc.data();
         if (profile.businesses && profile.businesses.length > 0) {
           profilesData.push({
             id: doc.id,
+            ...profile
+          });
+        }
+      });
+
+      // Add test profiles
+      testProfilesSnapshot.forEach(doc => {
+        const profile = doc.data();
+        if (profile.businesses && profile.businesses.length > 0) {
+          profilesData.push({
+            id: doc.id,
+            isTest: true,
             ...profile
           });
         }
@@ -52,6 +70,7 @@ const Directory = () => {
       <div className="max-w-4xl mx-auto py-12 text-center">
         <h2 className="text-2xl font-bold mb-4 text-white">No Listings Found</h2>
         <p className="text-gray-300">There are no directory listings available at the moment.</p>
+        <TestProfileManager />
       </div>
     );
   }
@@ -63,7 +82,16 @@ const Directory = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {profiles.map(profile => (
           profile.businesses.map((business, index) => (
-            <div key={`${profile.id}-${index}`} className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div 
+              key={`${profile.id}-${index}`} 
+              className={`bg-white rounded-lg shadow-lg overflow-hidden ${profile.isTest ? 'border-2 border-amber-500' : ''}`}
+            >
+              {profile.isTest && (
+                <div className="bg-amber-500 text-white text-xs px-2 py-1 text-center">
+                  Test Profile
+                </div>
+              )}
+              
               {/* Business Logo */}
               <div className="h-48 bg-gray-100 flex items-center justify-center">
                 {business.logo?.url ? (
@@ -97,6 +125,9 @@ const Directory = () => {
           ))
         ))}
       </div>
+
+      {/* Test Profile Manager */}
+      <TestProfileManager />
     </div>
   );
 };
