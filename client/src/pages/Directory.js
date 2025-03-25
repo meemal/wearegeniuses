@@ -5,6 +5,7 @@ import { db } from '../services/firebase';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import LoadingProgress from '../components/LoadingProgress';
 import { FaGlobe, FaFacebook, FaLinkedin, FaYoutube } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const Directory = () => {
   // Fetch all profiles with directory listings
@@ -81,59 +82,16 @@ const Directory = () => {
                 <h3 className="text-xl font-bold text-gray-800 mb-2">{business.name}</h3>
                 <p className="text-gray-600 mb-4">{business.headline}</p>
                 
-                {/* Category Badge */}
-                <div className="mb-4">
-                  <span className="inline-block bg-amber-100 text-amber-800 text-sm px-3 py-1 rounded-full">
-                    {business.category}
-                  </span>
-                </div>
-
                 {/* Description */}
                 <p className="text-gray-700 mb-6 line-clamp-3">{business.description}</p>
 
-                {/* Social Links */}
-                <div className="flex space-x-4">
-                  {business.socialAddresses?.website && (
-                    <a
-                      href={business.socialAddresses.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-amber-500"
-                    >
-                      <FaGlobe className="w-5 h-5" />
-                    </a>
-                  )}
-                  {business.socialAddresses?.facebook && (
-                    <a
-                      href={business.socialAddresses.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-[#1877F2]"
-                    >
-                      <FaFacebook className="w-5 h-5" />
-                    </a>
-                  )}
-                  {business.socialAddresses?.linkedin && (
-                    <a
-                      href={business.socialAddresses.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-[#0A66C2]"
-                    >
-                      <FaLinkedin className="w-5 h-5" />
-                    </a>
-                  )}
-                  {business.socialAddresses?.youtube && (
-                    <a
-                      href={business.socialAddresses.youtube}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-[#FF0000]"
-                    >
-                      <FaYoutube className="w-5 h-5" />
-                    </a>
-                  )}
-                </div>
+                {/* Visit Profile Button */}
+                <Link
+                  to={`/view-profile/${profile.id}`}
+                  className="block w-full text-center bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors"
+                >
+                  Visit Profile
+                </Link>
               </div>
             </div>
           ))
