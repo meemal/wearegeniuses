@@ -1,0 +1,14 @@
+{
+  "name": "wearegeniuses-scripts",
+  "version": "1.0.0",
+  "description": "Scripts for managing We Are Geniuses test data",
+  "main": "index.js",
+  "scripts": {
+    "create-test-profiles": "node createTestProfiles.js",
+    "delete-test-profiles": "node deleteTestProfiles.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "firebase": "^9.22.0"
+  }
+} 
