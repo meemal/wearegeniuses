@@ -1,49 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../services/firebase';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { FaSearch, FaMapMarkerAlt, FaBuilding, FaUser } from 'react-icons/fa';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import LoadingProgress from '../components/LoadingProgress';
-import { FaGlobe, FaFacebook, FaLinkedin, FaYoutube } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import TestProfileManager from '../components/TestProfileManager';
+import { useDebounce } from '../hooks/useDebounce';
 
 const Directory = () => {
   // Fetch all profiles with directory listings
   const { data: profiles, isLoading, error } = useQuery({
     queryKey: ['directory'],
     queryFn: async () => {
-      const [profilesSnapshot, testProfilesSnapshot] = await Promise.all([
-        getDocs(collection(db, 'profiles')),
-        getDocs(collection(db, 'test_profiles'))
-      ]);
-      
-      const profilesData = [];
-      
-      // Add regular profiles
-      profilesSnapshot.forEach(doc => {
-        const profile = doc.data();
-        if (profile.businesses && profile.businesses.length > 0) {
-          profilesData.push({
-            id: doc.id,
-            ...profile
-          });
-        }
-      });
+      try {
+        console.log('Fetching profiles...');
+        const [profilesSnapshot, testProfilesSnapshot] = await Promise.all([
+          getDocs(collection(db, 'profiles')),
+          getDocs(collection(db, 'test_profiles'))
+        ]);
+        
+        const profilesData = [];
+        
+        // Add regular profiles
+        profilesSnapshot.forEach(doc => {
+          const profile = doc.data();
+          if (profile.businesses && profile.businesses.length > 0) {
+            profilesData.push({
+              id: doc.id,
+              ...profile
+            });
+          }
+        });
 
-      // Add test profiles
-      testProfilesSnapshot.forEach(doc => {
-        const profile = doc.data();
-        if (profile.businesses && profile.businesses.length > 0) {
-          profilesData.push({
-            id: doc.id,
-            isTest: true,
-            ...profile
-          });
-        }
-      });
-      
-      return profilesData;
+        // Add test profiles
+        testProfilesSnapshot.forEach(doc => {
+          const profile = doc.data();
+          if (profile.businesses && profile.businesses.length > 0) {
+            profilesData.push({
+              id: doc.id,
+              isTest: true,
+              ...profile
+            });
+          }
+        });
+
+        console.log('Fetched profiles:', profilesData);
+        return profilesData;
+      } catch (error) {
+        console.error('Error fetching profiles:', error);
+        throw error;
+      }
     }
   });
 
@@ -61,6 +69,7 @@ const Directory = () => {
       <div className="max-w-4xl mx-auto py-12 text-center">
         <h2 className="text-2xl font-bold mb-4 text-white">Error Loading Directory</h2>
         <p className="text-gray-300">There was an error loading the directory. Please try again later.</p>
+        <p className="text-red-300 mt-2">{error.message}</p>
       </div>
     );
   }
@@ -70,7 +79,6 @@ const Directory = () => {
       <div className="max-w-4xl mx-auto py-12 text-center">
         <h2 className="text-2xl font-bold mb-4 text-white">No Listings Found</h2>
         <p className="text-gray-300">There are no directory listings available at the moment.</p>
-        <TestProfileManager />
       </div>
     );
   }
@@ -126,8 +134,12 @@ const Directory = () => {
         ))}
       </div>
 
-      {/* Test Profile Manager */}
-      <TestProfileManager />
+      {/* No Results Message */}
+      {!isLoading && profiles.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">No profiles found matching your criteria.</p>
+        </div>
+      )}
     </div>
   );
 };
