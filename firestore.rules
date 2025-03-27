@@ -1,0 +1,28 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'naomispirit@gmail.com';
+    }
+
+    // Profiles collection rules
+    match /profiles/{profileId} {
+      // Allow read access to all authenticated users
+      allow read: if request.auth != null;
+      
+      // Allow write access if:
+      // 1. User is admin (can do anything)
+      // 2. User is updating their own profile
+      // 3. User is creating a new profile
+      allow create: if isAdmin() || request.auth != null;
+      allow update, delete: if isAdmin() || request.auth.uid == profileId;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+} 
