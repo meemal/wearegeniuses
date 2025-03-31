@@ -17,6 +17,7 @@ import Profile from './pages/Profile';
 import Directory from './pages/Directory';
 import Subscription from './pages/Subscription';
 import ViewProfile from './pages/ViewProfile';
+import AdminDashboard from './pages/AdminDashboard';
 
 // Placeholder pages with frosted glass effect
 const About = () => (
@@ -51,6 +52,7 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/subscription" element={<Subscription />} />
+                <Route path="/admin" element={<AdminDashboard />} />
                 <Route 
                   path="/directory" 
                   element={
@@ -68,7 +70,7 @@ function App() {
                   } 
                 />
                 <Route 
-                  path="/view-profile/:userId" 
+                  path="/profile/:userId" 
                   element={
                     <ProtectedRoute>
                       <ViewProfile />
