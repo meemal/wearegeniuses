@@ -276,7 +276,7 @@ const ViewProfile = () => {
             <div className="flex flex-wrap gap-2">
               {profile.eventsAttended.map((event, index) => (
                 <span key={index} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-                  {event}
+                  {typeof event === 'object' ? event.name : event}
                 </span>
               ))}
             </div>

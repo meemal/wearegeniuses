@@ -47,16 +47,16 @@ const LikeButton = ({ profileId, businessIndex, business }) => {
     <button 
       onClick={handleLikeClick}
       disabled={isLoading}
-      className="flex items-center gap-1 text-gray-600 hover:text-amber-600 transition-colors"
+      className="flex items-center gap-1 bg-white bg-opacity-80 rounded-full px-3 py-1 shadow-sm hover:bg-opacity-100 transition-all"
       aria-label={isLiked ? "Unlike" : "Like"}
       title={currentUser ? (isLiked ? "Unlike" : "Like") : "Login to like"}
     >
       {isLiked ? (
         <FaHeart className="text-amber-500" />
       ) : (
-        <FaRegHeart />
+        <FaRegHeart className="text-gray-600" />
       )}
-      <span>{likeCount}</span>
+      <span className="text-gray-700 font-medium">{likeCount}</span>
     </button>
   );
 };

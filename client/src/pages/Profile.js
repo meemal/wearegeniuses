@@ -897,7 +897,7 @@ const Profile = () => {
                   key={index}
                   className="bg-pink-500 text-white rounded-full px-3 py-1 text-sm font-medium flex items-center"
                 >
-                  {event.name}
+                  {typeof event === 'object' ? event.name : event}
                   <button
                     type="button"
                     onClick={() => {

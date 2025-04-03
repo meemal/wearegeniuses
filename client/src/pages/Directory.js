@@ -5,8 +5,11 @@ import LoadingSkeleton from '../components/LoadingSkeleton';
 import LoadingProgress from '../components/LoadingProgress';
 import { FaGlobe, FaFacebook, FaLinkedin, FaYoutube, FaSearch, FaSync } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import LikeButton from '../components/LikeButton';
+import { useAuth } from '../context/AuthContext';
 
 const Directory = () => {
+  const { currentUser } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [profiles, setProfiles] = useState([]);
@@ -299,7 +302,16 @@ const Directory = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayedProfiles.map(profile => (
           profile.businesses.map((business, index) => (
-            <div key={`${profile.id}-${index}`} className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div key={`${profile.id}-${index}`} className="bg-white rounded-lg shadow-lg overflow-hidden relative">
+              {/* Like Button - Positioned at top right */}
+              <div className="absolute top-2 right-2 z-10">
+                <LikeButton 
+                  profileId={profile.id}
+                  businessIndex={index}
+                  business={business}
+                />
+              </div>
+              
               {/* Business Logo */}
               <div className="h-48 bg-gray-100 flex items-center justify-center">
                 {business.logo?.url ? (
@@ -332,13 +344,15 @@ const Directory = () => {
                 <p className="text-gray-700 mb-6 line-clamp-3">{business.description}</p>
                 )}
 
-                {/* Visit Profile Button */}
-                <Link
-                  to={`/profile/${profile.id}`}
-                  className="block w-full text-center bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors"
-                >
-                  Visit Profile
-                </Link>
+                {/* Action Button - Visit Profile */}
+                <div className="flex flex-col space-y-2">
+                  <Link
+                    to={`/profile/${profile.id}`}
+                    className="block w-full text-center bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors"
+                  >
+                    Visit Profile
+                  </Link>
+                </div>
               </div>
             </div>
           ))
