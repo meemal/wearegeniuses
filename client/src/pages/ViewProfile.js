@@ -4,12 +4,14 @@ import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../hooks/useProfile';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import LoadingProgress from '../components/LoadingProgress';
-import { FaUser, FaEnvelope, FaMapMarkerAlt, FaEdit, FaGlobe, FaFacebook, FaLinkedin, FaYoutube, FaPhone } from 'react-icons/fa';
+import UserLikes from '../components/UserLikes';
+import { FaUser, FaEnvelope, FaMapMarkerAlt, FaEdit, FaGlobe, FaFacebook, FaLinkedin, FaYoutube, FaPhone, FaHeart } from 'react-icons/fa';
 
 const ViewProfile = () => {
   const { currentUser } = useAuth();
   const { userId } = useParams();
   const { profile, isLoading } = useProfile(userId || currentUser?.uid);
+  const isOwnProfile = !userId || userId === currentUser?.uid;
 
   if (isLoading) {
     return (
@@ -33,13 +35,15 @@ const ViewProfile = () => {
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-white">Profile</h2>
-        <Link
-          to="/profile"
-          className="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-full hover:bg-amber-600 transition-colors"
-        >
-          <FaEdit className="mr-2" />
-          Edit Profile
-        </Link>
+        {isOwnProfile && (
+          <Link
+            to="/profile"
+            className="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-full hover:bg-amber-600 transition-colors"
+          >
+            <FaEdit className="mr-2" />
+            Edit Profile
+          </Link>
+        )}
       </div>
 
       {/* Main Profile Card */}
@@ -116,150 +120,180 @@ const ViewProfile = () => {
               </div>
             )}
 
-            {/* Events Attended */}
-            {profile.eventsAttended && profile.eventsAttended.length > 0 && (
-              <div className="mb-6">
-                <h4 className="text-lg font-semibold text-gray-800 mb-2">Events Attended</h4>
-                <div className="flex flex-wrap gap-2">
-                  {profile.eventsAttended.map((event, index) => (
-                    <span
-                      key={index}
-                      className="bg-pink-500 text-white rounded-full px-3 py-1 text-sm font-medium"
-                    >
-                      {event.name}
-                    </span>
-                  ))}
-                </div>
+            {/* Social Links */}
+            {(profile.social?.website || profile.social?.facebook || profile.social?.linkedin) && (
+              <div className="mt-6 flex flex-wrap gap-4">
+                {profile.social?.website && (
+                  <a href={profile.social.website} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-amber-500 transition-colors">
+                    <FaGlobe className="inline mr-2" />
+                    Website
+                  </a>
+                )}
+                {profile.social?.facebook && (
+                  <a href={profile.social.facebook} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-amber-500 transition-colors">
+                    <FaFacebook className="inline mr-2" />
+                    Facebook
+                  </a>
+                )}
+                {profile.social?.linkedin && (
+                  <a href={profile.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-amber-500 transition-colors">
+                    <FaLinkedin className="inline mr-2" />
+                    LinkedIn
+                  </a>
+                )}
               </div>
             )}
           </div>
         </div>
       </div>
-
-      {/* Directory Listings */}
+      
+      {/* Businesses Section */}
       {profile.businesses && profile.businesses.length > 0 && (
-        <div>
-          <h3 className="text-2xl font-bold text-white mb-6">Directory Listings</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {profile.businesses.map((business, index) => (
-              <div key={index} className="relative rounded-lg overflow-hidden">
-                <div className="absolute inset-0 bg-overlay-white backdrop-blur-md"></div>
-                <div className="relative p-6">
-                  {/* Business Header */}
-                  <div className="flex items-start mb-6">
-                    {/* Business Logo */}
-                    <div className="h-24 w-24 bg-gray-100 flex items-center justify-center rounded-lg mr-4 flex-shrink-0">
-                      {business.logo?.url ? (
-                        <img
-                          src={business.logo.url}
-                          alt={`${business.name} logo`}
-                          className="max-h-full max-w-full object-contain p-2"
-                        />
-                      ) : (
-                        <span className="text-gray-400 text-3xl">🏢</span>
-                      )}
-                    </div>
-
-                    {/* Business Title and Category */}
-                    <div className="flex-1">
-                      <h4 className="text-xl font-bold text-gray-800 mb-1">{business.name}</h4>
-                      <p className="text-gray-600 text-sm mb-2">{business.headline}</p>
+        <div className="relative rounded-lg overflow-hidden mb-8">
+          <div className="absolute inset-0 bg-overlay-white backdrop-blur-md"></div>
+          <div className="relative p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Businesses & Services</h3>
+            <div className="space-y-8">
+              {profile.businesses.map((business, index) => (
+                <div key={index} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2">{business.name}</h4>
+                  
+                  {business.category && (
+                    <div className="mb-2">
                       <span className="inline-block bg-amber-100 text-amber-800 text-sm px-3 py-1 rounded-full">
                         {business.category}
                       </span>
                     </div>
+                  )}
+                  
+                  {business.headline && (
+                    <p className="text-gray-700 mb-2 italic">{business.headline}</p>
+                  )}
+                  
+                  {business.description && (
+                    <p className="text-gray-700 mb-4">{business.description}</p>
+                  )}
+                  
+                  {/* Contact Info */}
+                  <div className="space-y-2 mt-4">
+                    {business.location && (
+                      <p className="text-gray-600 flex items-center">
+                        <FaMapMarkerAlt className="mr-2" />
+                        {business.location}
+                      </p>
+                    )}
+                    {business.email && (
+                      <p className="text-gray-600 flex items-center">
+                        <FaEnvelope className="mr-2" />
+                        <a href={`mailto:${business.email}`} className="hover:text-amber-500 transition-colors">
+                          {business.email}
+                        </a>
+                      </p>
+                    )}
+                    {business.phone && (
+                      <p className="text-gray-600 flex items-center">
+                        <FaPhone className="mr-2" />
+                        <a href={`tel:${business.phone}`} className="hover:text-amber-500 transition-colors">
+                          {business.phone}
+                        </a>
+                      </p>
+                    )}
                   </div>
-
-                  {/* Description */}
-                  <p className="text-gray-700 mb-6 line-clamp-3">{business.description}</p>
-
-                  {/* Services Offered */}
-                  {business.services && business.services.length > 0 && (
-                    <div className="mb-6">
-                      <h5 className="text-sm font-semibold text-gray-800 mb-2">Services Offered</h5>
+                  
+                  {/* Skills */}
+                  {business.skills && business.skills.length > 0 && (
+                    <div className="mt-4">
+                      <h5 className="text-sm font-semibold text-gray-700 mb-2">Skills</h5>
                       <div className="flex flex-wrap gap-2">
-                        {business.services.map((service, serviceIndex) => (
-                          <span
-                            key={serviceIndex}
-                            className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"
-                          >
-                            {service}
+                        {business.skills.map((skill, idx) => (
+                          <span key={idx} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">
+                            {skill}
                           </span>
                         ))}
                       </div>
                     </div>
                   )}
-
-                  {/* Contact Information */}
-                  <div className="mb-6 space-y-2">
-                    {business.email && (
-                      <div className="flex items-center text-gray-700 text-sm">
-                        <FaEnvelope className="w-4 h-4 mr-2 text-gray-500" />
-                        <a href={`mailto:${business.email}`} className="hover:text-amber-500">
-                          {business.email}
-                        </a>
+                  
+                  {/* Services */}
+                  {business.services && business.services.length > 0 && (
+                    <div className="mt-4">
+                      <h5 className="text-sm font-semibold text-gray-700 mb-2">Services</h5>
+                      <div className="space-y-2">
+                        {business.services.map((service, idx) => (
+                          <div key={idx} className="bg-gray-50 p-3 rounded">
+                            <h6 className="font-medium text-gray-800">{service.name}</h6>
+                            {service.description && (
+                              <p className="text-gray-600 text-sm mt-1">{service.description}</p>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    )}
-                    {business.phone && (
-                      <div className="flex items-center text-gray-700 text-sm">
-                        <FaPhone className="w-4 h-4 mr-2 text-gray-500" />
-                        <a href={`tel:${business.phone}`} className="hover:text-amber-500">
-                          {business.phone}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-
+                    </div>
+                  )}
+                  
                   {/* Social Links */}
-                  <div className="flex space-x-4 pt-4 border-t border-gray-200">
-                    {business.socialAddresses?.website && (
-                      <a
-                        href={business.socialAddresses.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-amber-500"
-                        title="Website"
-                      >
-                        <FaGlobe className="w-5 h-5" />
-                      </a>
-                    )}
-                    {business.socialAddresses?.facebook && (
-                      <a
-                        href={business.socialAddresses.facebook}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-[#1877F2]"
-                        title="Facebook"
-                      >
-                        <FaFacebook className="w-5 h-5" />
-                      </a>
-                    )}
-                    {business.socialAddresses?.linkedin && (
-                      <a
-                        href={business.socialAddresses.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-[#0A66C2]"
-                        title="LinkedIn"
-                      >
-                        <FaLinkedin className="w-5 h-5" />
-                      </a>
-                    )}
-                    {business.socialAddresses?.youtube && (
-                      <a
-                        href={business.socialAddresses.youtube}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-[#FF0000]"
-                        title="YouTube"
-                      >
-                        <FaYoutube className="w-5 h-5" />
-                      </a>
-                    )}
-                  </div>
+                  {business.socialAddresses && Object.values(business.socialAddresses).some(val => val) && (
+                    <div className="mt-4 flex flex-wrap gap-4">
+                      {business.socialAddresses.facebook && (
+                        <a href={business.socialAddresses.facebook} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-amber-500 transition-colors">
+                          <FaFacebook className="inline mr-2" />
+                          Facebook
+                        </a>
+                      )}
+                      {business.socialAddresses.youtube && (
+                        <a href={business.socialAddresses.youtube} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-amber-500 transition-colors">
+                          <FaYoutube className="inline mr-2" />
+                          YouTube
+                        </a>
+                      )}
+                      {business.socialAddresses.linkedin && (
+                        <a href={business.socialAddresses.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-amber-500 transition-colors">
+                          <FaLinkedin className="inline mr-2" />
+                          LinkedIn
+                        </a>
+                      )}
+                      {business.website && (
+                        <a href={business.website} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-amber-500 transition-colors">
+                          <FaGlobe className="inline mr-2" />
+                          Website
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Events Attended Section */}
+      {profile.eventsAttended && profile.eventsAttended.length > 0 && (
+        <div className="relative rounded-lg overflow-hidden mb-8">
+          <div className="absolute inset-0 bg-overlay-white backdrop-blur-md"></div>
+          <div className="relative p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Events Attended</h3>
+            <div className="flex flex-wrap gap-2">
+              {profile.eventsAttended.map((event, index) => (
+                <span key={index} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                  {event}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Liked Businesses Section - Only show on own profile */}
+      {isOwnProfile && (
+        <div className="relative rounded-lg overflow-hidden mb-8">
+          <div className="absolute inset-0 bg-overlay-white backdrop-blur-md"></div>
+          <div className="relative p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+              <FaHeart className="text-amber-500 mr-2" />
+              Liked Businesses
+            </h3>
+            <UserLikes userId={currentUser?.uid} />
           </div>
         </div>
       )}

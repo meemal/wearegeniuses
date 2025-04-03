@@ -18,6 +18,18 @@ service cloud.firestore {
       // 3. User is creating a new profile
       allow create: if isAdmin() || request.auth != null;
       allow update, delete: if isAdmin() || request.auth.uid == profileId;
+      
+      // Special rule for updating likes in businesses
+      allow update: if request.auth != null &&
+                     request.resource.data.diff(resource.data).affectedKeys().hasOnly(['businesses']) &&
+                     request.resource.data.businesses.size() == resource.data.businesses.size();
+    }
+    
+    // User likes collection - for storing which listings a user has liked
+    match /userLikes/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
     }
 
     // Default deny
